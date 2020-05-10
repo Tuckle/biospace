@@ -2,7 +2,6 @@ from flask import Flask, Blueprint, request, render_template
 
 from .exceptions import ExceptionHandler
 from app.errors import blueprint
-from lib import cache
 
 
 def create_app(config_object=None):
@@ -11,7 +10,6 @@ def create_app(config_object=None):
 
     app.url_map.strict_slashes = False
     app.config.from_object(config_object)
-    cache.init_app(app)
     register_blueprints(app)
     register_error_handler(app)
 
