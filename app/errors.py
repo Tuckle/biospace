@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template
 import os
-print("DEBUG", os.path.abspath(__file__), os.path.abspath(os.getcwd()))
 from lib import cache
 
 blueprint = Blueprint("error", __name__)
