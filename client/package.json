@@ -1,11 +1,24 @@
 {
+  "proxy": "http://127.0.0.1:5000",
   "name": "client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.9.14",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.53",
+    "@widgetbot/react-embed": "^1.2.2",
+    "d3": "^5.5.0",
+    "material-components-web": "^6.0.0",
     "react": "^16.8.6",
+    "react-d3-graph": "^2.4.1",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-force-graph": "^1.34.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^3.4.1",
+    "react-split-pane": "^2.0.3",
+    "redux": "^4.0.5",
+    "typeface-roboto": "0.0.75"
   },
   "scripts": {
     "start": "react-scripts start",

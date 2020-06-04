@@ -1,25 +1,13 @@
-from flask import Flask, Blueprint, request, render_template
-
 from .exceptions import ExceptionHandler
 from app.errors import blueprint
+from app import graph, users
 from lib import cache
-
-
-def create_app(config_object=None):
-    """ Factory function to start application  """
-    app = Flask(__name__.split('.')[0], static_folder='../client/build/static', template_folder="../client/build")
-
-    app.url_map.strict_slashes = False
-    app.config.from_object(config_object)
-    cache.init_app(app)
-    register_blueprints(app)
-    register_error_handler(app)
-
-    return app
 
 
 def register_blueprints(app):
     app.register_blueprint(blueprint)
+    app.register_blueprint(graph.routes.blueprint)
+    app.register_blueprint(users.routes.blueprint)
 
 
 def register_error_handler(app):
@@ -32,3 +20,6 @@ def register_error_handler(app):
         return response
 
     app.errorhandler(ExceptionHandler)(errorhandler)
+
+
+funcs = [cache.init_app, register_blueprints, register_error_handler]

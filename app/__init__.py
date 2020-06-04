@@ -1,5 +1,4 @@
-from  app.index import create_app
+from .config import create_app
+from .index import funcs
 
-
-
-app = create_app()
+app = create_app(funcs=funcs)
