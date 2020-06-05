@@ -30,9 +30,16 @@ class Spaces(db.Model):
     name = db.Column(db.String(200))
     description = db.Column(db.String(400))
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    accessed = db.Column(db.DateTime, default=datetime.datetime.utcnow, index=True)
+    popularity = db.Column(db.Integer, default=1, index=True)
 
     def __repr__(self):
         return '<Space {}>'.format(self.id)
+
+    def access(self):
+        self.popularity = self.popularity + 1
+        self.accessed = datetime.datetime.utcnow()
+        db.session.commit()
 
     @classmethod
     def convert_id(cls, input_id):
@@ -42,12 +49,12 @@ class Spaces(db.Model):
         return hash_id.decode(input_id)[0]
 
     @classmethod
-    def get(cls, id=None, keys=None):
+    def get(cls, id=None, keys=None, raw=False):
         if id:
             space = cls.query.filter(cls.id == id).first()
             if not space:
                 return
-            return space.serialize()
+            return space.serialize() if not raw else space
         if keys:
             if isinstance(keys, str):
                 keys = list(filter(lambda x: x, map(lambda x: x.strip().lower(), keys.split(','))))
@@ -58,7 +65,15 @@ class Spaces(db.Model):
                 db.session.add(space)
                 db.session.commit()
             space = cls.query.filter(cls.keys == keys).first()
-            return space.serialize()
+            return space.serialize() if not raw else space
+
+    @classmethod
+    def get_spaces(cls, top=10, asc=False, by=None):
+        if by is None:
+            by = cls.popularity
+        by = by.asc() if asc else by.desc()
+        query = list(map(lambda x: x.serialize(), cls.query.order_by(by).limit(top)))
+        return query
 
     def serialize(self):
         return {
@@ -66,7 +81,9 @@ class Spaces(db.Model):
             "keys": self.keys,
             "name": self.name,
             "description": self.description,
-            "created": str(self.created)
+            "created": str(self.created),
+            "accessed": str(self.accessed),
+            "popularity": self.popularity
         }
 
 

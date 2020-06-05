@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Route} from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
@@ -36,24 +36,29 @@ function ModalSearch({closed = true}) {
     const classes = useStyles();
     const [open, setOpen] = React.useState(!closed);
     const [selected, setSelected] = React.useState([]);
+    const [keys, setKeys] = React.useState([]);
 
-    let keys = JSON.parse(localStorage.getItem("keywordsList") || "[]");
-    if (!keys.length) {
-        keys = fetch(getUrl("graph/keywords"))
-            .then(res => res.json())
-            .then((data) => {
-                localStorage.setItem("keywordsDict", JSON.stringify(data["info"]));
-                let keywordsList = Array();
-                for (let key in data["info"]) {
-                    keywordsList.push({"key": key, "count": data["info"][key]})
-                }
-                keys = keywordsList;
-                localStorage.setItem("keywordsList", JSON.stringify(keywordsList));
-            })
-            .catch(console.log)
-    }
-    keys = keys.sort((a, b) => (a.count < b.count) ? 1 : -1);
-    keys = keys.slice(0, 1000);
+    useEffect(() => {
+        let keys = JSON.parse(localStorage.getItem("keywordsList") || "[]");
+        if (!keys.length) {
+            keys = fetch(getUrl("graph/keywords"))
+                .then(res => res.json())
+                .then((data) => {
+                    localStorage.setItem("keywordsDict", JSON.stringify(data["info"]));
+                    let keywordsList = Array();
+                    for (let key in data["info"]) {
+                        keywordsList.push({"key": key, "count": data["info"][key]})
+                    }
+                    keys = keywordsList;
+                    localStorage.setItem("keywordsList", JSON.stringify(keywordsList));
+                })
+                .catch(console.log)
+        }
+        keys = keys.sort((a, b) => (a.count < b.count) ? 1 : -1);
+        keys = keys.slice(0, 1000);
+        setKeys(keys);
+        }, []
+    )
 
     const handleOpen = () => {
         setOpen(true);
