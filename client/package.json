@@ -10,6 +10,7 @@
     "@widgetbot/react-embed": "^1.2.2",
     "d3": "^5.5.0",
     "material-components-web": "^6.0.0",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-d3-graph": "^2.4.1",
     "react-dom": "^16.8.6",

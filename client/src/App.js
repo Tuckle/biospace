@@ -35,7 +35,10 @@ function App() {
     return (
         <Router>
             <div className="App">
-                <AppBar position="static">
+                <AppBar
+                    position="static"
+                    color="default"
+                >
                     <Toolbar>
                         <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"
                                     aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
