@@ -2,11 +2,13 @@ import React, {useEffect} from 'react';
 import {Route} from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import {Button, Checkbox, TextField} from '@material-ui/core';
+import {Button, Checkbox, TextField, IconButton} from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import SearchIcon from '@material-ui/icons/Search';
 import {getUrl} from "../res/urls";
+import AccountCircle from "@material-ui/icons/AccountCircle";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
@@ -135,9 +137,17 @@ function ModalSearch({closed = true}) {
 
     return (
         <div>
-            <Button onClick={handleOpen}>
-                Search
-            </Button>
+            <IconButton
+                aria-label="account of current user"
+                aria-haspopup="true"
+                onClick={handleOpen}
+                color="inherit"
+            >
+                <SearchIcon />
+            </IconButton>
+            {/*<Button onClick={handleOpen}>*/}
+            {/*    Search*/}
+            {/*</Button>*/}
             <Modal
                 open={open}
                 onClose={handleClose}

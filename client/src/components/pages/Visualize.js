@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {ForceGraph3D} from "react-force-graph";
 import data from '../marvel/data';
 import WidgetBot from "@widgetbot/react-embed";
-import config from '../marvel/config';
 import {getUrl} from "../res/urls";
 import PropTypes from 'prop-types';
 import {
@@ -12,52 +10,18 @@ import {
 import {
     List, ListItem, Paper
 } from "@material-ui/core";
-import MenuIcon from '@material-ui/icons/Menu';
-
-// graph event callbacks
-const onClickGraph = function () {
-    console.log(`Clicked the graph background`);
-};
-
-const onClickNode = function (nodeId) {
-    console.log(`Clicked node ${nodeId}`);
-};
-
-const onDoubleClickNode = function (nodeId) {
-    console.log(`Double clicked node ${nodeId}`);
-};
-
-const onRightClickNode = function (event, nodeId) {
-    console.log(`Right clicked node ${nodeId}`);
-};
-
-const onMouseOverNode = function (nodeId) {
-    console.log(`Mouse over node ${nodeId}`);
-};
-
-const onMouseOutNode = function (nodeId) {
-    console.log(`Mouse out node ${nodeId}`);
-};
-
-const onClickLink = function (source, target) {
-    console.log(`Clicked link between ${source} and ${target}`);
-};
-
-const onRightClickLink = function (event, source, target) {
-    console.log(`Right clicked link between ${source} and ${target}`);
-};
-
-const onMouseOverLink = function (source, target) {
-    console.log(`Mouse over in link between ${source} and ${target}`);
-};
-
-const onMouseOutLink = function (source, target) {
-    console.log(`Mouse out link between ${source} and ${target}`);
-};
-
-const onNodePositionChange = function (nodeId, x, y) {
-    console.log(`Node ${nodeId} is moved to new position. New position is x= ${x} y= ${y}`);
-};
+import FilterListIcon from '@material-ui/icons/FilterList';
+import SearchIcon from '@material-ui/icons/Search';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import {FaDiscord} from "react-icons/all";
+import {Icon, InlineIcon} from '@iconify/react';
+import discordIcon from '@iconify/icons-simple-icons/discord';
+import MainRouteIcon from "../icons/MainRouteIcon";
+import GraphViewIcon from "../icons/GraphViewIcon";
+import AccountIcon from "../icons/AccountIcon";
+import GraphVisualisation from "../visualisations/GraphVisualisation";
+import TableVisualisation from "../visualisations/TableVisualisation";
+import {fetchGraphData, convertToGraphData} from "../res/data";
 
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -100,56 +64,14 @@ function ViewKeywords(props) {
 
     const [tabValue, setTabValue] = useState(0);
 
+    const [graphViewValue, setGraphViewValue] = useState(1);
+
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
     };
 
     useEffect(() => {
-        fetch(
-            getUrl("space"), {
-                method: 'post',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "id": space_id,
-                })
-            })
-            .then(function (response) {
-                return response.json()
-            })
-            .then(function (data) {
-                const keys = data['keys']
-                if (data['id']) {
-                    fetch(getUrl("graph/sub?keys=") + keys)
-                        .then(res => res.json())
-                        .then((info) => {
-                            info = info["info"];
-                            let nodes = Array();
-                            for (let key in info["nodes"]) {
-                                let currentNode = info["nodes"][key];
-                                currentNode["name"] = currentNode["id"];
-                                nodes.push(currentNode);
-                            }
-                            let relations = Array();
-                            for (let dst in info["relationships"]) {
-                                for (let src in info["relationships"][dst]) {
-                                    relations.push({
-                                        source: src,
-                                        target: dst,
-                                        type: info["relationships"][dst][src]
-                                    });
-                                }
-                            }
-                            setData({
-                                links: relations,
-                                nodes: nodes
-                            });
-                        })
-                        .catch(console.log)
-                }
-            })
+        fetchGraphData(space_id, setData)
     }, []);
 
     return (
@@ -160,9 +82,20 @@ function ViewKeywords(props) {
                     color="default"
                     style={{width: graphWidth}}>
                     <Toolbar variant="dense">
-                        <IconButton edge="start" color="inherit" aria-label="menu">
-                            <MenuIcon/>
-                        </IconButton>
+                        <MainRouteIcon home/>
+                        <GraphViewIcon value={graphViewValue} setValue={setGraphViewValue}/>
+                        <div style={styles.rightGraphToolbar}>
+                            <IconButton edge="start" color="inherit" aria-label="menu">
+                                <FilterListIcon/>
+                            </IconButton>
+                            <IconButton edge="start" color="inherit" aria-label="menu">
+                                <SearchIcon/>
+                            </IconButton>
+                            <IconButton edge="start" color="inherit" aria-label="menu">
+                                <AddCircleOutlineIcon/>
+                            </IconButton>
+                        </div>
+                        <AccountIcon/>
                     </Toolbar>
                 </AppBar>
                 <AppBar
@@ -177,7 +110,7 @@ function ViewKeywords(props) {
                         variant="scrollable"
                         scrollButtons="auto"
                     >
-                        <Tab label="Item One" {...a11yProps(0)} />
+                        <Tab label={<Icon icon={discordIcon}/>} {...a11yProps(0)} />
                         <Tab label="Item Two" {...a11yProps(1)} />
                         <Tab label="Item Three" {...a11yProps(2)} />
                         <Tab label="Item Four" {...a11yProps(3)} />
@@ -188,11 +121,15 @@ function ViewKeywords(props) {
                 </AppBar>
             </div>
             <div style={{display: "flex"}}>
-                <ForceGraph3D
-                    graphData={myData}
-                    linkWidth={2}
-                    width={graphWidth}
-                />
+                {graphViewValue === 1 ? <TableVisualisation
+                        data={myData}
+                        width={graphWidth}
+                    /> :
+                    graphViewValue === 2 ? <Typography>Chart</Typography> :
+                        <GraphVisualisation
+                            data={myData}
+                            width={graphWidth}
+                        />}
                 <div>
                     <TabPanel index={0} value={tabValue}>
                         <WidgetBot
@@ -220,5 +157,11 @@ function ViewKeywords(props) {
         </div>
     );
 }
+
+const styles = {
+    rightGraphToolbar: {
+        marginLeft: 'auto'
+    }
+};
 
 export default ViewKeywords;

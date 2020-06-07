@@ -1,10 +1,10 @@
 import React, {useDebugValue, useEffect, useState} from 'react';
 import {fetchUrl} from "../res/urls";
 import {
-    List, ListItem, Divider,
-    Box, Typography
+    Box, Typography,
+    Grid, GridList, GridListTile, GridListTileBar, IconButton
 } from "@material-ui/core";
-import Button from '@material-ui/core/Button';
+import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import {Route} from "react-router-dom";
 
 function Home() {
@@ -30,37 +30,43 @@ function Home() {
         if (!inputArray.length) {
             return null;
         }
-        return <div>
+        return <div style={{margin: 10}}>
             <Typography>{name}</Typography>
-            <List style={styles.list}>
-                {inputArray
-                    .sort((a, b) => a[keys] < b[keys] ? 1 : -1)
-                    .map((item, i) => (
-                    <ListItem>
-                        <Box width={200} style={{textAlign: 'center'}} border={1}>
-                            <Typography>{item["id"]} - id</Typography>
-                            <Typography>{item["keys"]} - keywords</Typography>
-                            <Typography>{item[keys]} - {keys}</Typography>
-                            <Route render={({history}) => (
-                                <Button
-                                    onClick={() => {
-                                        history.push('/s/' + item['id'])
-                                    }}
-                                >
-                                    Open
-                                </Button>
-                            )}/>
-                        </Box>
-                    </ListItem>
-                ))}
-            </List>
+            <div style={styles.rootList}>
+                <GridList style={styles.list}>
+                    {inputArray
+                        .sort((a, b) => a[keys] < b[keys] ? 1 : -1)
+                        .map((item, i) => (
+                            <GridListTile
+                                style={styles.listItem}
+                            >
+                                <img
+                                    src="https://i.pinimg.com/originals/d9/f7/05/d9f70593f3d861704c83c34faff90705.png"/>
+                                <GridListTileBar
+                                    title={item["id"]}
+                                    actionIcon={
+                                        <IconButton>
+                                            <Route render={({history}) => (
+                                                <OpenInBrowserIcon
+                                                    onClick={() => {
+                                                        history.push('/s/' + item['id'])
+                                                    }}
+                                                >
+                                                    Open
+                                                </OpenInBrowserIcon>
+                                            )}/>
+                                        </IconButton>
+                                    }
+                                />
+                            </GridListTile>
+                        ))}
+                </GridList>
+            </div>
         </div>
     }
 
     return (
         <div className="Home">
-            {/*<p>This would be my home page</p>*/}
-            {/*<Button variant="outlined">click home</Button>*/}
             {getPopular(popular, "Popular", "popularity")}
             {getPopular(lastAccessed, "Recent", "accessed")}
         </div>
@@ -69,12 +75,18 @@ function Home() {
 
 const styles = {
     list: {
+        flexWrap: 'nowrap',
+        // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
+        transform: 'translateZ(0)'
+    },
+    listItem: {
+        margin: 5,
+        maxWidth: 200
+    },
+    rootList: {
         display: 'flex',
-        flexDirection: 'row',
-        padding: 0,
-        marginTop: 30,
-        marginLeft: 5,
-        marginRight: 5
+        flexWrap: 'wrap',
+        justifyContent: 'space-around'
     }
 };
 
