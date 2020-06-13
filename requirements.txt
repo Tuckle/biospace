@@ -1,3 +1,4 @@
+textract
 aniso8601==8.0.0
 beautifulsoup4==4.9.1
 bs4==0.0.1
@@ -38,3 +39,6 @@ urllib3==1.24.3
 wcwidth==0.1.9
 Werkzeug==1.0.1
 crossref-commons
+py3plex >= 0.68
+matplotlib
+git+git://github.com/davidadamojr/TextRank.git

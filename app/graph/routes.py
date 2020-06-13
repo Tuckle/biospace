@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from flask import jsonify
 from models.neo import Graph
 from models.postgres import Spaces, db
+from lib.utils import add_dois
 
 blueprint = Blueprint("graph", __name__)
 
@@ -14,7 +15,7 @@ def subgraph():
 
     if not keys:
         return jsonify({"error": "no keys given"})
-    return jsonify({"info": Graph.get_subgraph_from(keys)})
+    return jsonify({"info": Graph.get_subgraph_from(keys, retries=5, retry_delay=0.3)})
 
 
 @blueprint.route('/graph/keywords', methods=("GET",))
@@ -88,3 +89,22 @@ def get_spaces_top():
         }
         return result
     return []
+
+
+@blueprint.route('/add_dois', methods=("POST", "GET"))
+def add_doi():
+    data = request.get_json()
+    dois = data.get("doi", [])
+    space = data.get("space")
+    keys = data.get("keys", [])
+    if keys and isinstance(keys, str):
+        keys = keys.split(',')
+    if space:
+        space = Spaces.get(id=Spaces.convert_id(space), raw=True).serialize()
+        keys.extend(space.get("keys", "").split(","))
+    if keys:
+        keys = list(set(keys))
+    if not isinstance(dois, list):
+        dois = [dois]
+    result = add_dois(dois, keywords=keys)
+    return jsonify({"info": result})

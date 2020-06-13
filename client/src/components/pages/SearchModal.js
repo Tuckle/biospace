@@ -145,9 +145,6 @@ function ModalSearch({closed = true}) {
             >
                 <SearchIcon />
             </IconButton>
-            {/*<Button onClick={handleOpen}>*/}
-            {/*    Search*/}
-            {/*</Button>*/}
             <Modal
                 open={open}
                 onClose={handleClose}

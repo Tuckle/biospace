@@ -1,4 +1,6 @@
 import os
+import time
+import neobolt.exceptions
 
 from py2neo import Graph as NeoGraph, Node, Relationship
 from config.neo import *
@@ -64,12 +66,39 @@ class BaseNode:
 
     @classmethod
     def get(cls, id_):
-        result = graph.run(format_(
-            MATCH_NODE, cls.node_name, {"id": id_})).data()[0]['n']
+        try:
+            result = graph.run(format_(
+                MATCH_NODE, cls.node_name, {"id": id_})).data()[0]['n']
+        except IndexError:
+            return None
         node = cls()
         node._data = dict(result)
         node._node = result
         return node
+
+    @classmethod
+    def get_or_add(cls, id_, data=None):
+        if data is None:
+            data = dict()
+            data["id"] = id_
+        try:
+            node = cls.get(id_)
+        except:
+            node = None
+        if not node:
+            node = cls(**data)
+            node.save()
+        elif data:
+            for key in data:
+                node[key] = data[key]
+                node.save()
+        return node
+
+    @classmethod
+    def delete(cls, id_):
+        graph.run(format_(
+            DELETE_NODE, cls.node_name, {"id": id_}))
+        return True
 
     @classmethod
     def get_all(cls, fields="id"):
@@ -118,9 +147,19 @@ class BaseNode:
 
 
 class Paper(BaseNode):
-    # id, references, citations, year_of_publications, type_of_publication
-    _fields = ["id", "r", "c", "y", "t"]
+    # id, references, citations, year_of_publications, type_of_publication, ts, title
+    _fields = ["id", "r", "c", "y", "t", "ts", "name"]
     node_name = "paper"
+
+    @classmethod
+    def get_or_add(cls, id_, data=None, keywords=None):
+        node = super().get_or_add(id_, data=data)
+        if keywords:
+            for key in keywords:
+                field = Field(id=key)
+                field.save()
+                node.contains(field, keyword=True)
+        return node
 
     def references(self, node):
         return self.connect_to(node, RELATIONSHIPS.REFERENCES)
@@ -155,14 +194,26 @@ class Field(BaseNode):
         id_ = cls.convert(id_)
         return super().get(id_)
 
+    @classmethod
+    def get_or_add(cls, id_, data=None):
+        id_ = cls.convert(id_)
+        return super().get_or_add(id_, data=data)
+
 
 class Graph:
     @staticmethod
-    def get_subgraph_from(keywords, separator=" OR "):
+    def get_subgraph_from(keywords, retries=1, retry_delay=0.2, separator=" OR "):
         keywords = list(map(Field.convert, keywords))
         keywords = separator.join(list(map(lambda x: 'b.id = "{}"'.format(x), keywords)))
         keywords = KEYWORDS.format(keywords)
-        result = graph.run(keywords).data()
+        for _retry in range(retries):
+            try:
+                result = graph.run(keywords).data()
+                break
+            except neobolt.exceptions.ServiceUnavailable:
+                if _retry == retries - 1:
+                    raise
+                time.sleep(retry_delay)
         relationships_names = dict()
         relationships = dict()
         nodes = dict()

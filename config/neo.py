@@ -3,7 +3,9 @@ def format_(query, *params):
     for i in range(len(params)):
         if isinstance(params[i], dict):
             params[i] = "{} {} {}".format(
-                "{", ", ".join(["{}: '{}'".format(k, params[i][k]) for k in params[i]]), "}"
+                "{", ", ".join(["{}: '{}'".format(
+                    k, params[i][k] if not isinstance(params[i][k], str) else params[i][k].replace("'", "")
+                ) for k in params[i]]), "}"
             )
     return query.format(*params)
 
@@ -17,6 +19,11 @@ RETURN n
 MATCH_NODE = """
 MATCH (n:{} {})
 RETURN n
+"""
+
+DELETE_NODE = """
+MATCH (n:{} {})
+DETACH DELETE n
 """
 
 RELATIONSHIP = """

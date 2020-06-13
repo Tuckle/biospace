@@ -250,7 +250,7 @@ def download_dois_parallel(from_path):
 
 
 if __name__ == '__main__':
-    path = r"C:\Users\apiriu\Documents\Me\Projects\repos\sciload\ids.dmp"
+    path = sys.argv[1]
     # download_dois_parallel(path + ".doi")
     # filter_ids_multi(path)
 

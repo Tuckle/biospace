@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import MainRouteIcon from "./components/icons/MainRouteIcon";
 import AccountIcon from "./components/icons/AccountIcon";
+import {SnackbarProvider} from 'notistack';
 
 function App() {
     const classes = useStyles();
@@ -25,7 +26,7 @@ function App() {
             color="default"
         >
             <Toolbar variant="dense">
-                <MainRouteIcon />
+                <MainRouteIcon/>
                 <Typography variant="h6" className={classes.title}>
                     BioSpace
                 </Typography>
@@ -34,29 +35,31 @@ function App() {
                         <ModalSearch/>
                     </Route>
                 </Switch>
-                <AccountIcon />
+                <AccountIcon/>
             </Toolbar>
         </AppBar>
     );
 
     return (
-        <Router>
-            <div className="App">
-                <Switch>
-                    <Route path="/home">
-                        {getMainAppBar()}
-                        <Home/>
-                    </Route>
-                    <Route path="/s">
-                        <ViewKeywords/>
-                    </Route>
-                    <Route path="/">
-                        {getMainAppBar()}
-                        <PresentationPage />
-                    </Route>
-                </Switch>
-            </div>
-        </Router>
+        <SnackbarProvider maxSnack={3}>
+            <Router>
+                <div className="App">
+                    <Switch>
+                        <Route path="/home">
+                            {getMainAppBar()}
+                            <Home/>
+                        </Route>
+                        <Route path="/s">
+                            <ViewKeywords/>
+                        </Route>
+                        <Route path="/">
+                            {getMainAppBar()}
+                            <PresentationPage/>
+                        </Route>
+                    </Switch>
+                </div>
+            </Router>
+        </SnackbarProvider>
     );
 }
 

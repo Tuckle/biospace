@@ -249,6 +249,7 @@ yarn-error.log*
 
 /venv
 
+.crapi_key
 *__pycache__
 build
 .env

@@ -3,7 +3,8 @@ import BubbleChartIcon from '@material-ui/icons/BubbleChart';
 import MultilineChartIcon from '@material-ui/icons/MultilineChart';
 import TableChartRoundedIcon from '@material-ui/icons/TableChartRounded';
 import {
-    Menu, MenuItem, IconButton, Typography
+    Menu, MenuItem, IconButton, Typography,
+    Tooltip, Fade
 } from "@material-ui/core";
 
 function GraphViewIcon({value, setValue}) {
@@ -23,7 +24,7 @@ function GraphViewIcon({value, setValue}) {
     }
 
     const showIcon = (name=null) => {
-        return <IconButton edge="start" color="inherit" aria-label="menu"
+        return <Tooltip title="Change view" arrow TransitionComponent={Fade}><IconButton edge="start" color="inherit" aria-label="menu"
                            aria-controls="bubble-menu" aria-haspopup="true" onClick={handleClick}>
             {
                 value === 1 ? <TableChartRoundedIcon /> : value === 2 ? <MultilineChartIcon /> : <BubbleChartIcon />
@@ -31,7 +32,7 @@ function GraphViewIcon({value, setValue}) {
             {
                 name ? value === 1 ? "table" : value === 2 ? "chart" : "graph" : null
             }
-        </IconButton>
+        </IconButton></Tooltip>
     }
 
     return (

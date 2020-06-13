@@ -27,6 +27,12 @@ const StyledTableRow = withStyles((theme) => ({
     },
 }))(TableRow);
 
+const StyledPaper = withStyles((theme) => ({
+    root: {
+        // backgroundColor: '#212121'
+    }
+}))(Paper);
+
 function getPapersCellsFrom(data) {
     return filterByType(data, "paper")["nodes"].map((row) => (
         <StyledTableRow key={row.id}>
@@ -47,7 +53,8 @@ function getFieldsCellsFrom(data) {
     return filterByType(data, "field")["nodes"].map((row) => (
         <StyledTableRow key={row.id}>
             <StyledTableCell component="th" scope="row">{row.id}</StyledTableCell>
-            <StyledTableCell align="right">{(data["links"] || []).filter(item => item["target"] == row.id).length}</StyledTableCell>
+            <StyledTableCell
+                align="right">{(data["links"] || []).filter(item => item["target"] == row.id).length}</StyledTableCell>
             <StyledTableCell align="right">-</StyledTableCell>
         </StyledTableRow>
     ))
@@ -57,12 +64,12 @@ function getConnectionsCellsFrom(data) {
 
 }
 
-function TableVisualisation({data, width = 500}) {
+function TableVisualisation({data, width = 500, maxHeight = window.innerHeight}) {
     const classes = useStyles();
     const [tableType, setTableType] = useState(0);
 
     const headerNames = {
-        0 : [["Id", {}], ["Title", {align: "right"}],
+        0: [["Id", {}], ["Title", {align: "right"}],
             ["Date", {align: "right"}], ["Opt", {align: "right"}]],
         1: [["Name", {}], ["Connections", {align: "right"}], ["Opt", {align: "right"}]],
         2: [["From", {}], ["Name", {}], ["To", {}]]
@@ -75,7 +82,7 @@ function TableVisualisation({data, width = 500}) {
     }
 
     return (
-        <TableContainer component={Paper} style={{width: width, maxHeight: window.innerHeight}}>
+        <TableContainer component={Paper} style={{width: width, maxHeight: maxHeight}}>
             <Grid container
                   spacing={3}
                   justify={"space-between"}
@@ -90,7 +97,7 @@ function TableVisualisation({data, width = 500}) {
                 <Grid item xs={3}>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
-                            <SearchIcon />
+                            <SearchIcon/>
                         </div>
                         <InputBase
                             placeholder="Search…"
@@ -98,7 +105,7 @@ function TableVisualisation({data, width = 500}) {
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
                             }}
-                            inputProps={{ 'aria-label': 'search' }}
+                            inputProps={{'aria-label': 'search'}}
                         />
                     </div>
                 </Grid>
