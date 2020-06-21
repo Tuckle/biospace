@@ -28,6 +28,14 @@ export function convertToGraphData(info) {
         if (!("name" in currentNode)) {
             currentNode["name"] = currentNode["id"]
         }
+        if("y" in currentNode) {
+            currentNode["year"] = currentNode["y"]
+        }
+        if(!("date" in currentNode)) {
+            if ("ts" in currentNode) {
+                currentNode["date"] = new Date(parseInt(currentNode["ts"]));
+            }
+        }
         nodes.push(currentNode);
     }
     let relations = Array();

@@ -120,12 +120,22 @@ def add_doi_keys(doi, keywords):
         node.contains(field, content=True)
 
 
-def update_dois(done_path):
+def update_dois(done_path, skip=0):
+    count = 0
     with open(done_path) as f:
         for line in f:
             line = line.strip()
             if not line:
                 continue
+            count += 1
+            if skip is not None and skip > 0:
+                skip -= 1
+                if skip <= 0:
+                    print("Continuing from", count)
+                continue
+            if count % 100 == 0:
+                print("Done", count)
+
             index = line.index('{"')
             doi = line[:index].strip()
             info = json.loads(line[index:].strip())
@@ -157,4 +167,4 @@ if __name__ == '__main__':
     found = dois_path + ".crossref.done"
     failed = dois_path + ".crossref.failed"
     # remove_dois(failed)
-    update_dois(found)
+    update_dois(found, skip=3800)

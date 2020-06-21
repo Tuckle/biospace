@@ -1,7 +1,9 @@
 import os
+import threading
 from flask import Flask
 from models.postgres import db
 from flask_jwt_extended import JWTManager
+from backend.utils import update_missing_dois
 
 
 def create_app(config_object=None, funcs=None):
@@ -23,5 +25,12 @@ def create_app(config_object=None, funcs=None):
 
     for func in funcs:
         func(app)
+
+    try:
+        th = threading.Thread(target=update_missing_dois, kwargs={"loop": True})
+        th.daemon = True
+        th.start()
+    except:
+        pass
 
     return app

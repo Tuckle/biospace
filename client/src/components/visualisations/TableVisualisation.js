@@ -34,34 +34,45 @@ const StyledPaper = withStyles((theme) => ({
 }))(Paper);
 
 function getPapersCellsFrom(data) {
+    console.log(data["nodes"][3]);
     return filterByType(data, "paper")["nodes"].map((row) => (
         <StyledTableRow key={row.id}>
             <StyledTableCell component="th" scope="row">
                 <Link href={row.url} target="_blank">
-                    {row.id}
+                    {row.name ? row.name : "-"}
                 </Link>
             </StyledTableCell>
-            <StyledTableCell align="right">-</StyledTableCell>
-            <StyledTableCell align="right">{row.y}</StyledTableCell>
+            <StyledTableCell>
+                {row.date ? row.date.toString().substr(0, 10) : row.year ? row.year : '-'}
+            </StyledTableCell>
+            <StyledTableCell align="right">{row.c ? row.c : '-'}</StyledTableCell>
+            <StyledTableCell align="right">{row.r ? row.r : '-'}</StyledTableCell>
+            <StyledTableCell align="right">{row.t ? row.t in ["1", "0"] ? 'paper' : row.t : '-'}</StyledTableCell>
             <StyledTableCell align="right">-</StyledTableCell>
         </StyledTableRow>
     ))
 }
 
 function getFieldsCellsFrom(data) {
-    console.log(data);
     return filterByType(data, "field")["nodes"].map((row) => (
         <StyledTableRow key={row.id}>
             <StyledTableCell component="th" scope="row">{row.id}</StyledTableCell>
             <StyledTableCell
-                align="right">{(data["links"] || []).filter(item => item["target"] == row.id).length}</StyledTableCell>
+                align="right">{(data["links"] || []).filter(item => item.target.id === row.id).length}</StyledTableCell>
             <StyledTableCell align="right">-</StyledTableCell>
         </StyledTableRow>
     ))
 }
 
 function getConnectionsCellsFrom(data) {
-
+    console.log(data["links"][0])
+    return data["links"].map((row) => (
+        <StyledTableRow key={row.source.id + row.target.id}>
+            <StyledTableCell component="th" scope="row">{row.source.name}</StyledTableCell>
+            {/*<StyledTableCell>-</StyledTableCell>*/}
+            <StyledTableCell align="right">{row.target.id}</StyledTableCell>
+        </StyledTableRow>
+    ))
 }
 
 function TableVisualisation({data, width = 500, maxHeight = window.innerHeight}) {
@@ -69,10 +80,13 @@ function TableVisualisation({data, width = 500, maxHeight = window.innerHeight})
     const [tableType, setTableType] = useState(0);
 
     const headerNames = {
-        0: [["Id", {}], ["Title", {align: "right"}],
-            ["Date", {align: "right"}], ["Opt", {align: "right"}]],
+        0: [["Title", {}], ["Date", {align: "right"}],
+            ["Citations", {align: "right"}],
+            ["References", {align: "right"}],
+            ["Type", {align: "right"}],
+            ["Options", {align: "right"}]],
         1: [["Name", {}], ["Connections", {align: "right"}], ["Opt", {align: "right"}]],
-        2: [["From", {}], ["Name", {}], ["To", {}]]
+        2: [["From", {}], ["To", {}]]
     };
 
     const tableCells = {

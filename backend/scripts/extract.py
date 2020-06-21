@@ -92,11 +92,17 @@ def extract_all_keywords(from_path, threads=5):
         tp.join()
 
 
-def add_extracted():
+def add_extracted(skip=0):
     ids = get_id_mapping(sys.argv[4], sys.argv[1])
     folder = sys.argv[2]
     count = 0
     for fo in filter(lambda x: x.name.endswith('.keys.json'), os.scandir(folder)):
+        if skip is not None and skip > 0:
+            skip -= 1
+            count += 1
+            if skip <= 0:
+                print("Continuing from", count)
+            continue
         id_ = fo.name[:-10]
         doi = ids.get(id_)
         if not doi:
@@ -109,14 +115,18 @@ def add_extracted():
         keywords = list(map(lambda x: x[0], keywords))
         if not keywords:
             continue
-        add_doi_keys(doi, keywords)
+        try:
+            add_doi_keys(doi, keywords)
+        except Exception as ex:
+            print(str(ex))
+            continue
         count += 1
         if count % 100 == 0:
             print("Added", count)
 
 
 if __name__ == '__main__':
-    add_extracted()
+    add_extracted(7500)
     # extract_all(sys.argv[1], sys.argv[2], 30)
     # extract_all_keywords(sys.argv[2])
     # get_keywords(r"D:\disertatie\extracted\cb10f288-4784-4a60-91c5-f74efc0bfc80.txt", vis=True)

@@ -108,3 +108,28 @@ def add_doi():
         dois = [dois]
     result = add_dois(dois, keywords=keys)
     return jsonify({"info": result})
+
+
+@blueprint.route('/add_project', methods=("POST", "GET"))
+def add_project():
+    data = request.get_json()
+    title = data.get("title")
+    description = data.get("description")
+    keys = data.get("keys", [])
+    if keys and isinstance(keys, str):
+        keys = keys.split(',')
+    if keys:
+        keys = list(set(keys))
+    return jsonify({"info": "success"})
+
+
+@blueprint.route('/add_space', methods=("POST", "GET"))
+def add_space():
+    data = request.get_json()
+    name = data.get("name")
+    keys = data.get("keys", [])
+    if keys and isinstance(keys, str):
+        keys = keys.split(',')
+    if keys:
+        keys = list(set(keys))
+    return jsonify({"info": "success"})

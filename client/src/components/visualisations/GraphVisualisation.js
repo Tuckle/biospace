@@ -96,6 +96,15 @@ function GraphVisualisation({data, position, width = 500}) {
                 linkWidth={2}
                 width={width}
                 onNodeClick={handleClick}
+                nodeColor={(item) => {
+                    if(item["type"] === "paper") {
+                        return 'grey'
+                    }
+                    else if(item["type"] === "field") {
+                        return 'green'
+                    }
+                    return 'white'
+                }}
             />
             {showNodeMenu()}
         </div>

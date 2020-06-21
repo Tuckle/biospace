@@ -249,6 +249,11 @@ class Graph:
     def custom_query(query):
         return graph.run(query).data()
 
+    @staticmethod
+    def get_missing_dois():
+        result = graph.run(GET_MISSING_DOIS_INFO).data()
+        return list(map(lambda x: dict(x['n']), result))
+
 
 if __name__ == '__main__':
     pass

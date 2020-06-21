@@ -4,7 +4,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import {getUrl} from "../res/urls";
 import {
-    Button, Checkbox, TextField,
+    Button, Checkbox, TextField, Typography,
     FormHelperText, InputLabel, Input, FormControl
 } from '@material-ui/core';
 
@@ -158,7 +158,7 @@ function LoginModal({closed = true}) {
 
     return (
         <div>
-            <text onClick={handleOpen}>{!loggedIn ? "Login" : "Logout"}</text>
+            <Typography onClick={handleOpen}>{!loggedIn ? "Login" : "Logout"}</Typography>
             <Modal
                 open={open}
                 onClose={handleClose}

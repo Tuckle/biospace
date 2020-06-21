@@ -14,11 +14,15 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import MainRouteIcon from "../icons/MainRouteIcon";
 import GraphViewIcon from "../icons/GraphViewIcon";
 import AccountIcon from "../icons/AccountIcon";
+import AddSpaceIcon from "../icons/AddSpaceIcon";
 import GraphVisualisation from "../visualisations/GraphVisualisation";
 import TableVisualisation from "../visualisations/TableVisualisation";
+import ChartVisualisation from "../visualisations/ChartVisualisation";
 import {fetchGraphData, filterByRules} from "../res/data";
 import FilterDataModal from "../modals/FilterDataModal";
 import SearchPapersModal from "../modals/SearchPapersModal";
+import ScriptTag from 'react-script-tag';
+import { FacebookProvider, Group, CustomChat } from 'react-facebook';
 import ReactCursorPosition, {INTERACTIONS} from 'react-cursor-position';
 
 function TabPanel(props) {
@@ -95,7 +99,7 @@ function ViewKeywords(props) {
                     <Toolbar variant="dense">
                         <MainRouteIcon home/>
                         <GraphViewIcon value={graphViewValue} setValue={setGraphViewValue}/>
-                        <div style={styles.rightGraphToolbar}>
+                        <Toolbar variant="dense" style={styles.rightGraphToolbar}>
                             <FilterDataModal
                                 data={myData}
                                 setFilterRules={filterGraphData}
@@ -105,12 +109,8 @@ function ViewKeywords(props) {
                                 data={myData}
                                 allData={allData}
                             />
-                            <Tooltip title="Add" arrow TransitionComponent={Fade}>
-                                <IconButton edge="start" color="inherit" aria-label="menu">
-                                    <AddCircleOutlineIcon/>
-                                </IconButton>
-                            </Tooltip>
-                        </div>
+                            <AddSpaceIcon data={myData} />
+                        </Toolbar>
                         <AccountIcon/>
                     </Toolbar>
                 </AppBar>
@@ -128,8 +128,8 @@ function ViewKeywords(props) {
                     >
                         <Tab label={"Info"} {...a11yProps(0)} />
                         <Tab label="Discord" {...a11yProps(1)} />
-                        <Tab label="Item Three" {...a11yProps(2)} />
-                        <Tab label="Item Four" {...a11yProps(3)} />
+                        <Tab label="Facebook" {...a11yProps(2)} />
+                        <Tab label="Reddit" {...a11yProps(3)} />
                         <Tab label="Item Five" {...a11yProps(4)} />
                         <Tab label="Item Six" {...a11yProps(5)} />
                         <Tab label="Item Seven" {...a11yProps(6)} />
@@ -141,7 +141,10 @@ function ViewKeywords(props) {
                         data={myData}
                         width={graphWidth}
                     /> :
-                    graphViewValue === 2 ? <Typography>Chart</Typography> :
+                    graphViewValue === 2 ? <ChartVisualisation
+                            myData={myData}
+                            width={graphWidth}
+                        /> :
                         <ReactCursorPosition
                             activationInteractionMouse={INTERACTIONS.HOVER} //default
                             hoverDelayInMs={250} //default: 0
@@ -155,14 +158,14 @@ function ViewKeywords(props) {
                 <div>
                     <TabPanel index={0} value={tabValue}>
                         <Paper style={{overflow: "auto", maxHeight: window.innerHeight}}>
-                            <Typography>IDs</Typography>
-                            <List style={{overflow: "auto"}}>
-                                {myData["nodes"].map((item, i) => (
-                                    <ListItem>
-                                        <Typography>{item["id"]}</Typography>
-                                    </ListItem>
-                                ))}
-                            </List>
+                            {/*<Typography>IDs</Typography>*/}
+                            {/*<List style={{overflow: "auto"}}>*/}
+                            {/*    {myData["nodes"].map((item, i) => (*/}
+                            {/*        <ListItem>*/}
+                            {/*            <Typography>{item["id"]}</Typography>*/}
+                            {/*        </ListItem>*/}
+                            {/*    ))}*/}
+                            {/*</List>*/}
                         </Paper>
                     </TabPanel>
                     <TabPanel index={1} value={tabValue}>
@@ -174,6 +177,20 @@ function ViewKeywords(props) {
                             height={window.innerHeight}
                         />
                     </TabPanel>
+                    <TabPanel index={2} value={tabValue}>
+                        <FacebookProvider appId="657162925011369" chatSupport>
+                            <Group
+                                href="https://www.facebook.com/groups/geneticbiohacking/"
+                                width={window.innerWidth - graphWidth}
+                                showSocialContext={true}
+                                showMetaData={true}
+                                skin="light"
+                            />
+                        </FacebookProvider>
+                    </TabPanel>
+                    <TabPanel index={3} value={tabValue}>
+                        <ScriptTag src="https://redditjs.com/subreddit.js" />
+                        </TabPanel>
                 </div>
             </div>
         </div>

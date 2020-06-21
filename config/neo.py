@@ -66,6 +66,11 @@ RETURN {}
 """
 
 
+GET_MISSING_DOIS_INFO = """
+match (n:paper) where not("name" in keys(n)) AND n.id =~ 'doi://.*' return n
+"""
+
+
 class RELATIONSHIPS:
     REFERENCES = "REFERENCES"
     SIMILAR = "SIMILAR"
